@@ -1,10 +1,12 @@
 package sudoku;
-
 import java.util.Arrays;
 
 public class SudokuSolve {
 
 	public boolean solve(int[][] board) {
+		boolean playable = playableBoard(board);
+		if (!playable)
+			return false;
 
 		for (int r = 0; r < 9; r++) {
 			for (int c = 0; c < 9; c++) {
@@ -12,7 +14,7 @@ public class SudokuSolve {
 					for (int tryNum = 1; tryNum < 10; tryNum++) {
 
 						boolean isAnswer = helperSolve(board, r, c, tryNum);
-						if (isAnswer != false) {
+						if (isAnswer) {
 							for (int i = 0; i < 9; i++) {
 								System.out.println(Arrays.toString(board[i]));
 							}
@@ -27,6 +29,46 @@ public class SudokuSolve {
 		}
 		return false;
 
+	}
+
+	public boolean playableBoard(int[][] board) {
+		for (int r = 0; r < 9; r++) {
+			for (int c = 0; c < 9; c++) {
+				if (board[r][c] > 9 || board[r][c] < 0) {
+					return false;
+				}
+			}
+		}
+
+		// Check to see if there is more than one of the same number in the same row
+		for (int r = 0; r < 9; r++) {
+			for (int c = 0; c < 9; c++) {
+				for (int cc = 0; cc < 9; cc++) {
+					if (cc == c)
+						continue;
+					if (board[r][c] == 0 || board[r][cc] == 0)
+						continue;
+					if (board[r][c] == board[r][cc])
+						return false;
+				}
+			}
+		}
+		
+		// Check to see if there is more than one of the same number in the same column 
+		for (int r = 0; r < 9; r++) {
+			for (int c = 0; c < 9; c++) {
+				for (int rr = 0; rr < 9; rr++) {
+					if (rr == r) 
+						continue;
+					if (board[r][c] == 0 || board[rr][c] == 0)
+						continue;
+					if (board[r][c] == board[rr][c]) 
+						return false;
+			}
+		}
+	}
+
+		return true;
 	}
 
 	private boolean helperSolve(int[][] board, int row, int col, int tryNum) {
