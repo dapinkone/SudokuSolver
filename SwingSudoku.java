@@ -21,7 +21,7 @@ public class SwingSudoku extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTField[][] board = new JTField[9][9];;
+	private JTField[][] board = new JTField[9][9];
 
 	class JTField extends JTextField {
 		private static final long serialVersionUID = 1L;
@@ -70,6 +70,14 @@ public class SwingSudoku extends JFrame {
 						}
 					}
 				}
+				// the solve algorithm mutates state, so we're going to need a deep copy to work
+				// around that.
+				int[][] deepcopy = new int[9][9];
+				for (int row = 0; row < 9; row++) {
+					for (int col = 0; col < 9; col++) {
+						deepcopy[row][col] = rawboard[row][col];
+					}
+				}
 				// try to solve board.
 				SudokuSolve solver = new SudokuSolve();
 				boolean success = solver.solve(rawboard);
@@ -78,8 +86,11 @@ public class SwingSudoku extends JFrame {
 					// TODO: message user about it.
 					System.out.println("Invalid input board state. Board not solvable.");
 				} else { /// successful solve?
-					setDefaultColors();
-					setBoard(rawboard);
+					// our deepcopy should have the original board state.
+					// and our rawboard should now hold a valid solution state.
+					// boardDelta will determine what changes were made
+					// animate board will display them in a pretty fashion.
+					animateBoard(boardDelta(deepcopy, rawboard));
 				}
 
 			}
@@ -92,53 +103,11 @@ public class SwingSudoku extends JFrame {
 				// get the calling text field.
 				JTField t = (JTField) event.getSource();
 				String text = t.getText();
-				if (text.equals(""))
-					return;
+				// if (text.equals(""))
+				// return;
 
-				// TODO: throw these checks into methods.
-				boolean rowmatch = false;
-				for (JTField f : board[t.row]) {
-					if (f.col == t.col)
-						continue; // same text field.
-					String c = f.getText();
-					if (c.equals(""))
-						continue;
-					if (c.equalsIgnoreCase(text)) {
-						rowmatch = true;
-						break;
-					}
-				}
-
-				boolean colmatch = false;
-				for (int row = 0; row < 9; row++) {
-					// check the column
-					if (board[row][t.col].row == t.row)
-						continue; // same text field.
-					String c = board[row][t.col].getText();
-					if (c.equals(""))
-						continue;
-					if (c.equalsIgnoreCase(text)) {
-						colmatch = true;
-						break;
-					}
-				}
-				// colors!!!
-				if (!colmatch) { // greens color first, so reds come out on top.
-					setColColor(t.col, Color.green);
-				}
-
-				if (!rowmatch) {
-					setRowColor(t.row, Color.green);
-				}
-				if (rowmatch) {
-					setRowColor(t.row, Color.red);
-				}
-				if (colmatch) {
-					setColColor(t.col, Color.red);
-				}
-//				setRowColor(t.row, Color.green);
-//				setColColor(t.col, Color.green.darker());
-//				setColor(t.row,t.col, Color.green.brighter());
+				// revalidate board colors
+				validateColors();
 			}
 
 			@Override
@@ -186,8 +155,8 @@ public class SwingSudoku extends JFrame {
 		constraints.gridy = constraints.gridy + 1;
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.PAGE_END;
-		constraints.gridwidth = 4;
-		constraints.gridx = 5;
+		constraints.gridwidth = 3;
+		constraints.gridx = 6;
 		constraints.ipady = 40;
 		JButton submit = new JButton();
 		submit.setText("Solve");
@@ -195,6 +164,7 @@ public class SwingSudoku extends JFrame {
 		contentPane.add(submit, constraints);
 
 		constraints.gridx = 0;
+		constraints.gridwidth = 3;
 		JButton randomButton = new JButton();
 		randomButton.setText("Random Board");
 		contentPane.add(randomButton, constraints);
@@ -206,6 +176,7 @@ public class SwingSudoku extends JFrame {
 	public void setDefaultColors() {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
+				setColor(row, col, Color.white);
 				if (row < 3 || row > 5)
 					setColor(row, col, Color.LIGHT_GRAY);
 				if (col > 2 && col < 6) {
@@ -217,6 +188,39 @@ public class SwingSudoku extends JFrame {
 				}
 			}
 		}
+
+	}
+
+	public int[] getQuadrant(int row, int col) { 
+		// return the boundaries in the form [minrow, maxrow, mincol, maxcol] 
+		return void;
+	}
+
+	/**
+	 * @param minRow
+	 * @param maxRow
+	 * @param minCol
+	 * @param maxCol
+	 * @param target
+	 * @return boolean
+	 */
+	public boolean searchQuadrant(int minRow, int maxRow, int minCol, int maxCol, int target) {
+		// returns true if target is found within these boundaries.
+		// if (row >= northBound && row <= southBound && col >= westBound && col <=
+		// eastBound) {
+		for (Integer row = minRow; row <= maxRow; row++) {
+			for (Integer col = minCol; col <= maxCol; col++) {
+				try {
+					if (Integer.parseInt(board[row][col].getText()) == target) {
+						return true;
+					}
+				} catch (Exception e) {
+					continue; // just an empty board spot, not a concern.
+				}
+
+			}
+		}
+		return false;
 	}
 
 	public void setColor(int row, int col, Color color) {
@@ -238,13 +242,112 @@ public class SwingSudoku extends JFrame {
 	public void setBoard(int[][] rawboard) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
-				try {
-					board[row][col].setText(Integer.toString(rawboard[row][col]));
-				} catch (Exception e) {
-					// invalid inputs TODO: error msg in gui?
-					break;
+				board[row][col].setText(Integer.toString(rawboard[row][col]));
+			}
+		}
+	}
+
+	public int[][] boardDelta(int[][] rawboard, int[][] solvedBoard) {
+		// given a board state
+		// TODO: refactor to return a list of coordinates rather than a full boardstate?
+		int[][] delta = new int[9][9];
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++) {
+				// if 'board' and 'solvedboard' aren't the same, i assume it was changed/solved,
+				// and return the solution.
+				// otherwise, return 0 for an empty cell, as was the standard proposed in the
+				// solver class.
+				delta[row][col] = (rawboard[row][col] == solvedBoard[row][col]) ? 0 : solvedBoard[row][col];
+			}
+		}
+		return delta;
+	}
+
+	public void animateBoard(int[][] boardDelta) {
+		setDefaultColors(); // clean up any colors in prep for animation.
+		// in order to not lock up the gui, we need to spawn a new thread
+		// to handle the changes.
+		class UpdaterThread extends Thread {
+			public void run() {
+				for (int row = 0; row < 9; row++) {
+					for (int col = 0; col < 9; col++) {
+						int cell = boardDelta[row][col];
+						if (cell == 0)
+							continue; // empty cell. there were no changes.
+						for (int i = 1; i <= cell; i++) {
+							// System.out.println(row + " " + col);
+							// it'd be cool to cycle through all the numbers which were attempted in the
+							// cell here.
+							board[row][col].setText(Integer.toString(i));
+							board[row][col].repaint();
+							// board[row][col].repaint();
+							// too fast! slow it down so i can see!
+							long starttime = System.currentTimeMillis();
+
+							while (System.currentTimeMillis() != starttime + 30)
+								continue; // this is super inefficient.
+						}
+					}
 				}
 			}
+		}
+		UpdaterThread t = new UpdaterThread();
+		t.start();
+	}
+
+	public void validateColors() {
+		setDefaultColors();
+		for (int row = 0; row < 9; row++) {
+			int[] rowseen = new int[10]; // has the row seen these numbers before?
+
+			for (int col = 0; col < 9; col++) {
+				JTField f = board[row][col];
+				String c = f.getText();
+				int i = 0;
+				if (c.equals(""))
+					continue;
+				try {
+					i = Integer.parseInt(c);
+				} catch (Exception e) { // invalid text
+					//System.out.println("invalid 312");
+					setRowColor(row, Color.red);
+					setColColor(col, Color.red);
+				}
+				if(i > 9 || i < 0) { // invalid entry.
+//					System.out.println("317");
+					setRowColor(row, Color.red);
+					setColColor(col, Color.red);
+				}
+				
+				rowseen[i]++;
+
+				// check the rows
+				int[] colseen = new int[10];
+				for (int j = 0; j < 9; j++) { // record numbers in the column.
+					int l = 0;
+					String t = board[j][col].getText();
+					if(t.equals("")) continue;
+					try {
+						l = Integer.parseInt(t);
+					} catch (Exception e) { // invalid text
+						//System.out.println("332 " + e.toString());
+						setRowColor(row, Color.red);
+						setColColor(col, Color.red);
+					}
+					colseen[l]++;
+				}
+				for(int item : colseen) {
+					if(item > 1) {
+						//System.out.println("340");
+						setColColor(col, Color.red);
+					}
+				}
+			}
+			// any in this row exist more than once?
+			for (int item : rowseen)
+				if (item > 1) { // previously seen this number in this row!
+					setRowColor(row, Color.red);
+				}
 		}
 	}
 }
