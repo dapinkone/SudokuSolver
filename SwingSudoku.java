@@ -42,7 +42,7 @@ public class SwingSudoku extends JFrame {
 	 */
 	public static void main(String[] args) {
 		SwingSudoku frame = new SwingSudoku();
-		//frame.pack();
+		// frame.pack();
 		// TODO: refactor to enable proper horizontal/vertical scaling
 		frame.setResizable(false);
 		frame.setVisible(true);
@@ -184,7 +184,7 @@ public class SwingSudoku extends JFrame {
 
 		// contentPane.add(randomButton, constraints);
 		contentPane.add(buttonsgrid, BorderLayout.SOUTH);
-		
+
 		setContentPane(contentPane);
 		setDefaultColors();
 	}
