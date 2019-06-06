@@ -53,21 +53,61 @@ public class SudokuSolve {
 				}
 			}
 		}
-		
-		// Check to see if there is more than one of the same number in the same column 
+
+		// Check to see if there is more than one of the same number in the same column
 		for (int r = 0; r < 9; r++) {
 			for (int c = 0; c < 9; c++) {
 				for (int rr = 0; rr < 9; rr++) {
-					if (rr == r) 
+					if (rr == r)
 						continue;
 					if (board[r][c] == 0 || board[rr][c] == 0)
 						continue;
-					if (board[r][c] == board[rr][c]) 
+					if (board[r][c] == board[rr][c])
 						return false;
+				}
 			}
 		}
-	}
+		
+		// Check all of the quadrants and make sure that there are no duplicate numbers in the 
+		// quadrant.
+		
+		boolean check = checkQuadrant(board, 0, 3, 0, 3);
+		if (!check) return false;
+		check = checkQuadrant(board, 3, 6, 0, 3);
+		if (!check) return false;
+		check = checkQuadrant(board, 6, 9, 0, 3);
+		if (!check) return false;
+		check = checkQuadrant(board, 0, 3, 3, 6);
+		if (!check) return false;
+		check = checkQuadrant(board, 3, 6, 3, 6);
+		if (!check) return false;
+		check = checkQuadrant(board, 6, 9, 3, 6);
+		if (!check) return false;
+		check = checkQuadrant(board, 0, 3, 6, 9);
+		if (!check) return false;
+		check = checkQuadrant(board, 3, 6, 6, 9);
+		if (!check) return false;
+		check = checkQuadrant(board, 6, 9, 6, 9);
+		if (!check) return false;
 
+		return true;
+	}
+	
+	public boolean checkQuadrant(int[][] board, int rmin, int rmax, int cmin, int cmax) {
+		for (int r = rmin; r < rmax; r++) {
+			for (int c = cmin; c < cmax; c++) {
+				for (int rr = rmin; rr < rmax; rr++) {
+					for (int cc = cmin; cc < cmax; cc++) {
+						if (r == rr && c == cc) continue;
+						if (board[r][c] == 0 || board[rr][cc] == 0)
+							continue;
+						if (board[r][c] == board[rr][cc])
+							return false;
+					}
+				}
+			}
+		}
+		
 		return true;
 	}
 
