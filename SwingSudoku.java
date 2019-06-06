@@ -1,8 +1,11 @@
 package sudoku;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -39,6 +42,9 @@ public class SwingSudoku extends JFrame {
 	 */
 	public static void main(String[] args) {
 		SwingSudoku frame = new SwingSudoku();
+		//frame.pack();
+		// TODO: refactor to enable proper horizontal/vertical scaling
+		frame.setResizable(false);
 		frame.setVisible(true);
 
 	}
@@ -47,7 +53,7 @@ public class SwingSudoku extends JFrame {
 	 * Create the frame.
 	 */
 	public SwingSudoku() {
-
+		// int[][] rawboard = new int[9][9];
 		class SolveButtonEventListener implements ActionListener {
 
 			@Override
@@ -55,6 +61,7 @@ public class SwingSudoku extends JFrame {
 				// on click of the 'solve' button.
 				// build a board from the text fields
 				int[][] rawboard = new int[9][9];
+				// TODO: only need to update the cell which action was performed on.
 				for (int row = 0; row < 9; row++) {
 					for (int col = 0; col < 9; col++) {
 						try {
@@ -123,17 +130,19 @@ public class SwingSudoku extends JFrame {
 		}
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 720, 480);
+		setBounds(100, 100, 720, 720);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new GridBagLayout());
+		// contentPane.setLayout(new GridBagLayout());
+		contentPane.setLayout(new BorderLayout());
+		JPanel textboxgrid = new JPanel();
+		textboxgrid.setLayout(new GridLayout(9, 9));
+		// GridBagConstraints constraints = new GridBagConstraints();
+//		constraints.weightx = 0.5;
+//		constraints.gridx = 0;
+//		constraints.gridy = 0;
 
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.weightx = 0.5;
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		// constraints.fill = GridBagConstraints.HORIZONTAL;
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				JTField field = new JTField(row, col);
@@ -141,34 +150,41 @@ public class SwingSudoku extends JFrame {
 				field.addActionListener(listener);
 				field.addFocusListener(listener);
 				field.setSize(200, 200);
+				field.setPreferredSize(new Dimension(200, 70));
 				field.setAlignmentY(CENTER_ALIGNMENT);
 				field.setHorizontalAlignment(JTextField.CENTER);
-				field.setFont(field.getFont().deriveFont(java.awt.Font.PLAIN, 25));
+				field.setFont(field.getFont().deriveFont(java.awt.Font.PLAIN, 40));
 				board[row][col] = field;
-
-				constraints.gridy = row;
-				constraints.gridx = col;
-				contentPane.add(field, constraints);
-
+//
+//				constraints.gridy = row;
+//				constraints.gridx = col;
+				// contentPane.add(field, constraints);
+				textboxgrid.add(field);
 			}
 		}
-		constraints.gridy = constraints.gridy + 1;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.PAGE_END;
-		constraints.gridwidth = 3;
-		constraints.gridx = 6;
-		constraints.ipady = 40;
+		contentPane.add(textboxgrid, BorderLayout.NORTH);
+//		constraints.gridy = constraints.gridy + 1;
+//		constraints.fill = GridBagConstraints.BOTH;
+//		constraints.anchor = GridBagConstraints.PAGE_END;
+//		constraints.gridwidth = 3;
+//		constraints.gridx = 6;
+//		constraints.ipady = 40;
+		JPanel buttonsgrid = new JPanel();
+		buttonsgrid.setLayout(new GridLayout(0, 2));
 		JButton submit = new JButton();
 		submit.setText("Solve");
 		submit.addActionListener(new SolveButtonEventListener());
-		contentPane.add(submit, constraints);
-
-		constraints.gridx = 0;
-		constraints.gridwidth = 3;
+//		//contentPane.add(submit, constraints);
+		buttonsgrid.add(submit);
+//		constraints.gridx = 0;
+//		constraints.gridwidth = 3;
 		JButton randomButton = new JButton();
 		randomButton.setText("Random Board");
-		contentPane.add(randomButton, constraints);
+		buttonsgrid.add(randomButton);
 
+		// contentPane.add(randomButton, constraints);
+		contentPane.add(buttonsgrid, BorderLayout.SOUTH);
+		
 		setContentPane(contentPane);
 		setDefaultColors();
 	}
@@ -191,9 +207,9 @@ public class SwingSudoku extends JFrame {
 
 	}
 
-	public int[] getQuadrant(int row, int col) { 
-		// return the boundaries in the form [minrow, maxrow, mincol, maxcol] 
-		return void;
+	public int[] getQuadrant(int row, int col) {
+		// return the boundaries in the form [minrow, maxrow, mincol, maxcol]
+		return null;
 	}
 
 	/**
@@ -309,36 +325,38 @@ public class SwingSudoku extends JFrame {
 				try {
 					i = Integer.parseInt(c);
 				} catch (Exception e) { // invalid text
-					//System.out.println("invalid 312");
+					// System.out.println("invalid 312");
 					setRowColor(row, Color.red);
 					setColColor(col, Color.red);
 				}
-				if(i > 9 || i < 0) { // invalid entry.
+				if (i > 9 || i <= 0) { // invalid entry.
 //					System.out.println("317");
 					setRowColor(row, Color.red);
 					setColColor(col, Color.red);
+				} else {
+					rowseen[i]++;
 				}
-				
-				rowseen[i]++;
 
 				// check the rows
 				int[] colseen = new int[10];
 				for (int j = 0; j < 9; j++) { // record numbers in the column.
 					int l = 0;
 					String t = board[j][col].getText();
-					if(t.equals("")) continue;
+					if (t.equals(""))
+						continue;
 					try {
 						l = Integer.parseInt(t);
 					} catch (Exception e) { // invalid text
-						//System.out.println("332 " + e.toString());
+						// System.out.println("332 " + e.toString());
 						setRowColor(row, Color.red);
 						setColColor(col, Color.red);
 					}
-					colseen[l]++;
+					if (l <= 9 && l > 0)
+						colseen[l]++;
 				}
-				for(int item : colseen) {
-					if(item > 1) {
-						//System.out.println("340");
+				for (int item : colseen) {
+					if (item > 1) {
+						// System.out.println("340");
 						setColColor(col, Color.red);
 					}
 				}
