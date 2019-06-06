@@ -133,16 +133,10 @@ public class SwingSudoku extends JFrame {
 		setBounds(100, 100, 720, 720);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		// contentPane.setLayout(new GridBagLayout());
 		contentPane.setLayout(new BorderLayout());
 		JPanel textboxgrid = new JPanel();
 		textboxgrid.setLayout(new GridLayout(9, 9));
-		// GridBagConstraints constraints = new GridBagConstraints();
-//		constraints.weightx = 0.5;
-//		constraints.gridx = 0;
-//		constraints.gridy = 0;
 
-		// constraints.fill = GridBagConstraints.HORIZONTAL;
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				JTField field = new JTField(row, col);
@@ -155,34 +149,24 @@ public class SwingSudoku extends JFrame {
 				field.setHorizontalAlignment(JTextField.CENTER);
 				field.setFont(field.getFont().deriveFont(java.awt.Font.PLAIN, 40));
 				board[row][col] = field;
-//
-//				constraints.gridy = row;
-//				constraints.gridx = col;
-				// contentPane.add(field, constraints);
+
 				textboxgrid.add(field);
 			}
 		}
 		contentPane.add(textboxgrid, BorderLayout.NORTH);
-//		constraints.gridy = constraints.gridy + 1;
-//		constraints.fill = GridBagConstraints.BOTH;
-//		constraints.anchor = GridBagConstraints.PAGE_END;
-//		constraints.gridwidth = 3;
-//		constraints.gridx = 6;
-//		constraints.ipady = 40;
+		
 		JPanel buttonsgrid = new JPanel();
 		buttonsgrid.setLayout(new GridLayout(0, 2));
 		JButton submit = new JButton();
 		submit.setText("Solve");
 		submit.addActionListener(new SolveButtonEventListener());
-//		//contentPane.add(submit, constraints);
+
 		buttonsgrid.add(submit);
-//		constraints.gridx = 0;
-//		constraints.gridwidth = 3;
+
 		JButton randomButton = new JButton();
 		randomButton.setText("Random Board");
 		buttonsgrid.add(randomButton);
 
-		// contentPane.add(randomButton, constraints);
 		contentPane.add(buttonsgrid, BorderLayout.SOUTH);
 
 		setContentPane(contentPane);
@@ -362,10 +346,11 @@ public class SwingSudoku extends JFrame {
 				}
 			}
 			// any in this row exist more than once?
-			for (int item : rowseen)
+			for (int item : rowseen) {
 				if (item > 1) { // previously seen this number in this row!
 					setRowColor(row, Color.red);
 				}
+			}
 		}
 	}
 }
