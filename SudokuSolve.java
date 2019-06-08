@@ -3,6 +3,28 @@ package sudoku;
 import java.util.Arrays;
 
 public class SudokuSolve {
+	public class Quadrant {
+		int rmin, rmax, cmin, cmax;
+
+		public Quadrant(int rmin, int rmax, int cmin, int cmax) {
+			this.rmin = rmin;
+			this.rmax = rmax;
+			this.cmin = cmin;
+			this.cmax = cmax;
+		}
+	}
+
+	// defining constants for later use. these define the bounds of our quadrants.
+	Quadrant TOPLEFT = new Quadrant(0, 3, 0, 3);
+	Quadrant TOPMID = new Quadrant(3, 6, 0, 3);
+	Quadrant TOPRIGHT = new Quadrant(6, 9, 0, 3);
+	Quadrant MIDLEFT = new Quadrant(0, 3, 3, 6);
+	Quadrant MIDMID = new Quadrant(3, 6, 3, 6);
+	Quadrant MIDRIGHT = new Quadrant(6, 9, 3, 6);
+	Quadrant BOTTOMLEFT = new Quadrant(0, 3, 6, 9);
+	Quadrant BOTTOMMID = new Quadrant(3, 6, 6, 9);
+	Quadrant BOTTOMRIGHT = new Quadrant(6, 9, 6, 9);
+	Quadrant[] quads = { TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDMID, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT };
 
 	public boolean solve(int[][] board) {
 		boolean playable = playableBoard(board);
@@ -70,87 +92,25 @@ public class SudokuSolve {
 		}
 
 		// Check all of the quadrants and make sure that there are no duplicate numbers
-		// in the
-		// quadrant.
-		boolean check = checkTopLeft(board);
-		if (!check)
-			return false;
-
-		check = checkTopMid(board);
-		if (!check)
-			return false;
-
-		check = checkTopRight(board);
-		if (!check)
-			return false;
-
-		check = checkMidLeft(board);
-		if (!check)
-			return false;
-
-		check = checkMidMid(board);
-		if (!check)
-			return false;
-
-		check = checkMidRight(board);
-		if (!check)
-			return false;
-
-		check = checkBottomLeft(board);
-		if (!check)
-			return false;
-
-		check = checkBottomMid(board);
-		if (!check)
-			return false;
-
-		check = checkBottomRight(board);
-		if (!check)
-			return false;
+		// in the quadrant.
+		boolean check;
+		for (Quadrant quad : quads) {
+			check = checkQuadrant(board, quad);
+			if (!check)
+				return false;
+		}
 		return true;
 	}
 
-	public boolean checkTopLeft(int[][] board) {
-		return checkQuadrant(board, 0, 3, 0, 3);
-	}
-
-	public boolean checkTopMid(int[][] board) {
-		return checkQuadrant(board, 3, 6, 0, 3);
-	}
-
-	public boolean checkTopRight(int[][] board) {
-		return checkQuadrant(board, 6, 9, 0, 3);
-	}
-
-	public boolean checkMidLeft(int[][] board) {
-		return checkQuadrant(board, 0, 3, 3, 6);
-	}
-
-	public boolean checkMidMid(int[][] board) {
-		return checkQuadrant(board, 3, 6, 3, 6);
-	}
-
-	public boolean checkMidRight(int[][] board) {
-		return checkQuadrant(board, 6, 9, 3, 6);
-	}
-
-	public boolean checkBottomLeft(int[][] board) {
-		return checkQuadrant(board, 0, 3, 6, 9);
-	}
-
-	public boolean checkBottomMid(int[][] board) {
-		return checkQuadrant(board, 3, 6, 6, 9);
-	}
-
-	public boolean checkBottomRight(int[][] board) {
-		return checkQuadrant(board, 6, 9, 6, 9);
-	}
-
-	public boolean checkQuadrant(int[][] board, int rmin, int rmax, int cmin, int cmax) {
+	public boolean checkQuadrant(int[][] board, Quadrant quadrant) {
 		/**
 		 * checks area in board between given boundaries for duplicate values. note:
 		 * returns false if there are duplicates.
 		 */
+		int rmin = quadrant.rmin;
+		int rmax = quadrant.rmax;
+		int cmin = quadrant.cmin;
+		int cmax = quadrant.cmax;
 		for (int r = rmin; r < rmax; r++) {
 			for (int c = cmin; c < cmax; c++) {
 				for (int rr = rmin; rr < rmax; rr++) {
@@ -175,7 +135,7 @@ public class SudokuSolve {
 		 * Sub-Square 2. tryNum is not a duplicate in Col (horizontal) 3. tryNum is not
 		 * a duplicate in Row (vertical) Return false above cases.
 		 */
-
+		// TODO: possibly refactor to use later-dev'd infrastructure? This whole thing is magic.
 		// 1st square --> top-left
 		if (row <= 2 && col <= 2) {// 1b
 			for (int r1 = 0; r1 < 3; r1++) {
