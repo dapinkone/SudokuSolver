@@ -30,7 +30,7 @@ public class SudokuSolve {
 	Quadrant BOTTOMLEFT = new Quadrant(0, 3, 6, 9);
 	Quadrant BOTTOMMID = new Quadrant(3, 6, 6, 9);
 	Quadrant BOTTOMRIGHT = new Quadrant(6, 9, 6, 9);
-	Quadrant[] quads = { TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDMID, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT };
+	public final Quadrant[] quads = { TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDMID, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT };
 
 	public boolean solve(int[][] board) {
 		boolean playable = playableBoard(board);

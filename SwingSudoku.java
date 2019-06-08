@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import sudoku.SudokuSolve.Quadrant;
+
 public class SwingSudoku extends JFrame {
 
 	/**
@@ -53,7 +55,7 @@ public class SwingSudoku extends JFrame {
 	 * Create the frame.
 	 */
 	public SwingSudoku() {
-		// int[][] rawboard = new int[9][9];
+		int[][] rawboard = new int[9][9];
 		class SolveButtonEventListener implements ActionListener {
 
 			@Override
@@ -108,13 +110,13 @@ public class SwingSudoku extends JFrame {
 			@Override
 			public void focusLost(FocusEvent event) {
 				// get the calling text field.
-				JTField t = (JTField) event.getSource();
-				String text = t.getText();
+//				JTField t = (JTField) event.getSource();
+//				String text = t.getText();
 				// if (text.equals(""))
 				// return;
 
 				// revalidate board colors
-				validateColors();
+				validateColors(rawboard);
 			}
 
 			@Override
@@ -154,7 +156,7 @@ public class SwingSudoku extends JFrame {
 			}
 		}
 		contentPane.add(textboxgrid, BorderLayout.NORTH);
-		
+
 		JPanel buttonsgrid = new JPanel();
 		buttonsgrid.setLayout(new GridLayout(0, 2));
 		JButton submit = new JButton();
@@ -238,7 +240,14 @@ public class SwingSudoku extends JFrame {
 			board[row][col].setBackground(color);
 		}
 	}
-
+	public void setQuadColor(Quadrant quad, Color color) {
+		for (int row = quad.rmin; row < quad.rmax; row++) {
+			for (int col = quad.cmin; col < quad.cmax; col++) {
+				setColor(row, col, color);
+			}
+		}
+	}
+	
 	public void setBoard(int[][] rawboard) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
@@ -285,7 +294,7 @@ public class SwingSudoku extends JFrame {
 							long starttime = System.currentTimeMillis();
 
 							while (System.currentTimeMillis() != starttime + 30)
-								continue; // this is super inefficient.
+								continue; // this is super inefficient?
 						}
 					}
 				}
@@ -295,8 +304,10 @@ public class SwingSudoku extends JFrame {
 		t.start();
 	}
 
-	public void validateColors() {
+	public void validateColors(int[][] rawboard) {
 		setDefaultColors();
+		SudokuSolve solver = new SudokuSolve();
+
 		for (int row = 0; row < 9; row++) {
 			int[] rowseen = new int[10]; // has the row seen these numbers before?
 
@@ -349,6 +360,31 @@ public class SwingSudoku extends JFrame {
 			for (int item : rowseen) {
 				if (item > 1) { // previously seen this number in this row!
 					setRowColor(row, Color.red);
+				}
+			}
+		}
+
+		for (Quadrant quad : solver.quads) {
+			// validate the quadrant
+			int[] quadseen = new int[10];
+			for (int row = quad.rmin; row < quad.rmax; row++) {
+				for (int col = quad.cmin; col < quad.cmax; col++) {
+					int val = 0;
+					String txt = board[row][col].getText();
+					if (txt.equals(""))
+						continue;
+					try {
+						val = Integer.parseInt(txt);
+					} catch (Exception e) {
+						setQuadColor(quad, Color.red);
+					}
+					if (val <= 9 && val > 0)
+						quadseen[val]++;
+				}
+			}
+			for (int item : quadseen) {
+				if (item > 1) { // previously seen this number, color the quadrant.
+					setQuadColor(quad, Color.red);
 				}
 			}
 		}
