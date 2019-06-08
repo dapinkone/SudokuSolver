@@ -5,7 +5,13 @@ import java.util.Arrays;
 public class SudokuSolve {
 	public class Quadrant {
 		int rmin, rmax, cmin, cmax;
-
+		/**
+		 * 
+		 * @param rmin row minimum bound
+		 * @param rmax row maximum bound
+		 * @param cmin column minimum bound
+		 * @param cmax column maximum bound
+		 */
 		public Quadrant(int rmin, int rmax, int cmin, int cmax) {
 			this.rmin = rmin;
 			this.rmax = rmax;
@@ -135,7 +141,8 @@ public class SudokuSolve {
 		 * Sub-Square 2. tryNum is not a duplicate in Col (horizontal) 3. tryNum is not
 		 * a duplicate in Row (vertical) Return false above cases.
 		 */
-		// TODO: possibly refactor to use later-dev'd infrastructure? This whole thing is magic.
+		// TODO: possibly refactor to use later-dev'd infrastructure? This whole thing
+		// is magic.
 		// 1st square --> top-left
 		if (row <= 2 && col <= 2) {// 1b
 			for (int r1 = 0; r1 < 3; r1++) {
