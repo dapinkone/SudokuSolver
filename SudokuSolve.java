@@ -1,6 +1,7 @@
 package sudoku;
 
 import java.util.Arrays;
+import java.util.TreeSet;
 
 public class SudokuSolve {
 	public class Quadrant {
@@ -18,6 +19,18 @@ public class SudokuSolve {
 			this.rmax = rmax;
 			this.cmin = cmin;
 			this.cmax = cmax;
+		}
+
+		public boolean contains(int[][] board, int target) {
+			int[] seen = new int[10];
+			for (int row = rmin; row < rmax; row++) {
+				for (int col = cmin; col < cmax; col++) {
+					int cell = board[row][col];
+					if (cell > 0 && cell <= 9)
+						seen[cell]++;
+				}
+			}
+			return seen[target] >= 1;
 		}
 	}
 
@@ -111,12 +124,14 @@ public class SudokuSolve {
 	}
 
 	/*
-	 * Checks board quadrant for duplicate values.
-	 * Returns false if there are duplicates.
+	 * Checks board quadrant for duplicate values. Returns false if there are
+	 * duplicates.
 	 * 
 	 * @param board
+	 * 
 	 * @param quadrant
-	 * @return boolean 
+	 * 
+	 * @return boolean
 	 */
 	public boolean checkQuadrant(int[][] board, Quadrant quad) {
 		int rmin = quad.rmin;
@@ -155,7 +170,7 @@ public class SudokuSolve {
 		 * Sub-Square 2. tryNum is not a duplicate in Col (horizontal) 3. tryNum is not
 		 * a duplicate in Row (vertical) Return false above cases.
 		 */
-		// TODO: possibly refactor to use later-dev'd infrastructure? This whole thing
+		// TODO: refactor to use later-dev'd infrastructure? This whole thing
 		// is magic.
 		// 1st square --> top-left
 		if (row <= 2 && col <= 2) {// 1b
@@ -274,7 +289,7 @@ public class SudokuSolve {
 
 		// At this point, I should add the tryNum to the board.
 		board[row][col] = tryNum;
-		
+
 		// After adding, check did I just win
 		if (isWon(board)) {
 
@@ -325,5 +340,85 @@ public class SudokuSolve {
 		} else {
 			return false;
 		}
+	}
+
+	public int[][] NewGameBoard() {
+		int[][] newboard = new int[10][10];
+		for (int row = 0; row <= 9; row++) {
+			for (int col = 0; col <= 9; col++) {
+				TreeSet<Integer> options = new TreeSet<>();
+				for (int i = 1; i <= 9; i++)
+					options.add(i);
+				// remove options which are invalid
+				Quadrant quad = determineQuadrant(row, col);
+				for (int option : options) {
+					// checking quadrant. removing options present.
+					if (quad.contains(newboard, option))
+						options.remove(option);
+					// checking column
+					if (columnContains(newboard, col, option))
+						options.remove(option);
+					// checking row
+					if (rowContains(newboard, row, option))
+						options.remove(option);
+					// randomly select one of the available options.
+				}
+				int selectionIndex = (int) Math.random() * options.size();
+
+				// int selection = options.toarray(integer[] a)[]; //
+
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * returns the quadrant that the given cell is a member of.
+	 * 
+	 * @param row
+	 * @param col
+	 * @return
+	 */
+	public Quadrant determineQuadrant(int row, int col) {
+		for (Quadrant quad : quads) {
+			if (row >= quad.rmin && row < quad.rmax && col >= quad.cmin && col < quad.cmax)
+				return quad;
+		}
+		throw new IllegalArgumentException(); // ?? out of bounds?
+	}
+
+	/**
+	 * Return true if the specified column contains the target value
+	 * 
+	 * @param board
+	 * @param col
+	 * @param target
+	 * @return
+	 */
+	public boolean columnContains(int[][] board, int col, int target) {
+		for (int row = 0; row < 9; row++) {
+			if (board[row][col] == target) {
+				return true;
+			}
+
+		}
+		return false;
+	}
+
+	/**
+	 * returns true if specified row contains the target
+	 * 
+	 * @param board
+	 * @param row
+	 * @param target
+	 * @return
+	 */
+	public boolean rowContains(int[][] board, int row, int target) {
+		for (int col = 0; col < 9; col++) {
+			if (board[row][col] == target) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
