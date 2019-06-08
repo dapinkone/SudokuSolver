@@ -128,9 +128,7 @@ public class SudokuSolve {
 	 * duplicates.
 	 * 
 	 * @param board
-	 * 
 	 * @param quadrant
-	 * 
 	 * @return boolean
 	 */
 	public boolean checkQuadrant(int[][] board, Quadrant quad) {

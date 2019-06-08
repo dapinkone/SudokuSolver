@@ -240,6 +240,7 @@ public class SwingSudoku extends JFrame {
 			board[row][col].setBackground(color);
 		}
 	}
+
 	public void setQuadColor(Quadrant quad, Color color) {
 		for (int row = quad.rmin; row < quad.rmax; row++) {
 			for (int col = quad.cmin; col < quad.cmax; col++) {
@@ -247,7 +248,7 @@ public class SwingSudoku extends JFrame {
 			}
 		}
 	}
-	
+
 	public void setBoard(int[][] rawboard) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
@@ -313,19 +314,18 @@ public class SwingSudoku extends JFrame {
 
 			for (int col = 0; col < 9; col++) {
 				JTField f = board[row][col];
-				String c = f.getText();
+				String celltext = f.getText();
 				int i = 0;
-				if (c.equals(""))
+				if (celltext.equals(""))
 					continue;
 				try {
-					i = Integer.parseInt(c);
+					i = Integer.parseInt(celltext);
 				} catch (Exception e) { // invalid text
 					// System.out.println("invalid 312");
 					setRowColor(row, Color.red);
 					setColColor(col, Color.red);
 				}
 				if (i > 9 || i <= 0) { // invalid entry.
-//					System.out.println("317");
 					setRowColor(row, Color.red);
 					setColColor(col, Color.red);
 				} else {
@@ -336,13 +336,12 @@ public class SwingSudoku extends JFrame {
 				int[] colseen = new int[10];
 				for (int j = 0; j < 9; j++) { // record numbers in the column.
 					int l = 0;
-					String t = board[j][col].getText();
-					if (t.equals(""))
+					celltext = board[j][col].getText();
+					if (celltext.equals(""))
 						continue;
 					try {
-						l = Integer.parseInt(t);
+						l = Integer.parseInt(celltext);
 					} catch (Exception e) { // invalid text
-						// System.out.println("332 " + e.toString());
 						setRowColor(row, Color.red);
 						setColColor(col, Color.red);
 					}
@@ -351,7 +350,6 @@ public class SwingSudoku extends JFrame {
 				}
 				for (int item : colseen) {
 					if (item > 1) {
-						// System.out.println("340");
 						setColColor(col, Color.red);
 					}
 				}
@@ -366,7 +364,7 @@ public class SwingSudoku extends JFrame {
 
 		for (Quadrant quad : solver.quads) {
 			// validate the quadrant
-			int[] quadseen = new int[10];
+			int[] quadseen = new int[10]; // frequency of numbers in the quadrant
 			for (int row = quad.rmin; row < quad.rmax; row++) {
 				for (int col = quad.cmin; col < quad.cmax; col++) {
 					int val = 0;
@@ -378,6 +376,11 @@ public class SwingSudoku extends JFrame {
 					} catch (Exception e) {
 						setQuadColor(quad, Color.red.darker());
 					}
+
+					if (val > 9 || val <= 0) { // invalid entry.
+						setQuadColor(quad, Color.red.darker());
+					}
+
 					if (val <= 9 && val > 0)
 						quadseen[val]++;
 				}
