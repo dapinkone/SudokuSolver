@@ -274,10 +274,7 @@ public class SudokuSolve {
 
 		// At this point, I should add the tryNum to the board.
 		board[row][col] = tryNum;
-		// for(int i = 0; i < 9; i ++) {
-		// System.out.println(Arrays.toString(board[i]));
-		// }
-		// System.out.println();
+		
 		// After adding, check did I just win
 		if (isWon(board)) {
 
