@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class SudokuSolve {
 	public class Quadrant {
 		int rmin, rmax, cmin, cmax;
+
 		/**
 		 * 
 		 * @param rmin row minimum bound
@@ -30,7 +31,8 @@ public class SudokuSolve {
 	Quadrant BOTTOMLEFT = new Quadrant(0, 3, 6, 9);
 	Quadrant BOTTOMMID = new Quadrant(3, 6, 6, 9);
 	Quadrant BOTTOMRIGHT = new Quadrant(6, 9, 6, 9);
-	public final Quadrant[] quads = { TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDMID, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT };
+	public final Quadrant[] quads = { TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDMID, MIDRIGHT, BOTTOMLEFT, BOTTOMMID,
+			BOTTOMRIGHT };
 
 	public boolean solve(int[][] board) {
 		boolean playable = playableBoard(board);
@@ -108,15 +110,19 @@ public class SudokuSolve {
 		return true;
 	}
 
-	public boolean checkQuadrant(int[][] board, Quadrant quadrant) {
-		/**
-		 * checks area in board between given boundaries for duplicate values. note:
-		 * returns false if there are duplicates.
-		 */
-		int rmin = quadrant.rmin;
-		int rmax = quadrant.rmax;
-		int cmin = quadrant.cmin;
-		int cmax = quadrant.cmax;
+	/*
+	 * Checks board quadrant for duplicate values.
+	 * Returns false if there are duplicates.
+	 * 
+	 * @param board
+	 * @param quadrant
+	 * @return boolean 
+	 */
+	public boolean checkQuadrant(int[][] board, Quadrant quad) {
+		int rmin = quad.rmin;
+		int rmax = quad.rmax;
+		int cmin = quad.cmin;
+		int cmax = quad.cmax;
 		for (int r = rmin; r < rmax; r++) {
 			for (int c = cmin; c < cmax; c++) {
 				for (int rr = rmin; rr < rmax; rr++) {
@@ -135,6 +141,14 @@ public class SudokuSolve {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @param board
+	 * @param row
+	 * @param col
+	 * @param tryNum
+	 * @return
+	 */
 	private boolean helperSolve(int[][] board, int row, int col, int tryNum) {
 		/*
 		 * Given a number to put in, I should check 1. tryNum is not a duplicate in
