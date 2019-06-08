@@ -38,7 +38,7 @@ public class SwingSudoku extends JFrame {
 			this.col = col;
 		}
 	}
-
+	private SudokuSolve solver = new SudokuSolve();
 	/**
 	 * Launch the application.
 	 */
@@ -88,7 +88,6 @@ public class SwingSudoku extends JFrame {
 					}
 				}
 				// try to solve board.
-				SudokuSolve solver = new SudokuSolve();
 				boolean success = solver.solve(rawboard);
 				if (!success) {
 					// invalid/unsolvable board.
@@ -176,21 +175,12 @@ public class SwingSudoku extends JFrame {
 	}
 
 	public void setDefaultColors() {
-		for (int row = 0; row < 9; row++) {
-			for (int col = 0; col < 9; col++) {
-				setColor(row, col, Color.white);
-				if (row < 3 || row > 5)
-					setColor(row, col, Color.LIGHT_GRAY);
-				if (col > 2 && col < 6) {
-					if (board[row][col].getBackground() == Color.LIGHT_GRAY) {
-						setColor(row, col, Color.white);
-					} else {
-						setColor(row, col, Color.LIGHT_GRAY);
-					}
-				}
-			}
+		boolean toggle = false;
+		for(Quadrant quad : solver.quads) {
+			if(toggle) setQuadColor(quad, Color.LIGHT_GRAY);
+			else setQuadColor(quad, Color.WHITE);
+			toggle = !toggle;
 		}
-
 	}
 
 	public int[] getQuadrant(int row, int col) {
