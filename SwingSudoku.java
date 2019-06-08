@@ -293,7 +293,7 @@ public class SwingSudoku extends JFrame {
 							// too fast! slow it down so i can see!
 							long starttime = System.currentTimeMillis();
 
-							while (System.currentTimeMillis() != starttime + 30)
+							while (System.currentTimeMillis() != starttime + 10)
 								continue; // this is super inefficient?
 						}
 					}
@@ -376,7 +376,7 @@ public class SwingSudoku extends JFrame {
 					try {
 						val = Integer.parseInt(txt);
 					} catch (Exception e) {
-						setQuadColor(quad, Color.red);
+						setQuadColor(quad, Color.red.darker());
 					}
 					if (val <= 9 && val > 0)
 						quadseen[val]++;
@@ -384,7 +384,7 @@ public class SwingSudoku extends JFrame {
 			}
 			for (int item : quadseen) {
 				if (item > 1) { // previously seen this number, color the quadrant.
-					setQuadColor(quad, Color.red);
+					setQuadColor(quad, Color.red.darker());
 				}
 			}
 		}
