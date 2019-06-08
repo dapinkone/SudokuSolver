@@ -72,40 +72,39 @@ public class SudokuSolve {
 		// Check all of the quadrants and make sure that there are no duplicate numbers
 		// in the
 		// quadrant.
-		// TODO: possibly replace with subroutines
-		boolean check = checkQuadrant(board, 0, 3, 0, 3);
+		boolean check = checkTopLeft(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 3, 6, 0, 3);
+		check = checkTopMid(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 6, 9, 0, 3);
+		check = checkTopRight(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 0, 3, 3, 6);
+		check = checkMidLeft(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 3, 6, 3, 6);
+		check = checkMidMid(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 6, 9, 3, 6);
+		check = checkMidRight(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 0, 3, 6, 9);
+		check = checkBottomLeft(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 3, 6, 6, 9);
+		check = checkBottomMid(board);
 		if (!check)
 			return false;
 
-		check = checkQuadrant(board, 6, 9, 6, 9);
+		check = checkBottomRight(board);
 		if (!check)
 			return false;
 		return true;
