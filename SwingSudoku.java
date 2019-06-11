@@ -21,9 +21,6 @@ import sudoku.SudokuSolve.Quadrant;
 
 public class SwingSudoku extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTField[][] board = new JTField[9][9];
@@ -275,7 +272,6 @@ public class SwingSudoku extends JFrame {
 						if (cell == 0)
 							continue; // empty cell. there were no changes.
 						for (int i = 1; i <= cell; i++) {
-							// System.out.println(row + " " + col);
 							// it'd be cool to cycle through all the numbers which were attempted in the
 							// cell here.
 							board[row][col].setText(Integer.toString(i));
@@ -311,7 +307,6 @@ public class SwingSudoku extends JFrame {
 				try {
 					i = Integer.parseInt(celltext);
 				} catch (Exception e) { // invalid text
-					// System.out.println("invalid 312");
 					setRowColor(row, Color.red);
 					setColColor(col, Color.red);
 				}
